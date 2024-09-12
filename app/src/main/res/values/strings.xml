@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">GigaChatAppMain</string>
+    <string name="text_main">Введите список ингридиентов для коктейля</string>
+    <string name="text_generate">Сгенерировать</string>
+</resources>
