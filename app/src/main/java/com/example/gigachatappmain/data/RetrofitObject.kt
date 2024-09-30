@@ -18,40 +18,37 @@ import javax.net.ssl.X509TrustManager
 
 @Module
 @InstallIn(SingletonComponent::class)
-object RetrofitClasses {
+object RetrofitObject {
 
     @Provides
-    fun providesBaseUrl() = "https://ngw.devices.sberbank.ru:9443/api/v2/"
+    fun provideBaseUrl() = "https://ngw.devices.sberbank.ru:9443/api/v2/"
 
     @Provides
     @Singleton
-    fun getRetrofitInstance(base_Url: String): Retrofit {
+    fun provideRetrofitInstance(baseUrl: String): Retrofit {
         return Retrofit.Builder()
-            .baseUrl(base_Url)
-            .client(getUnsafeOkHttpClient().build())
+            .baseUrl(baseUrl)
+            .client(createInsecureOkHttpClient().build())
             .addConverterFactory(GsonConverterFactory.create())
             .build()
     }
 
     @Provides
     @Singleton
-    fun getRetrofitInterface(retrofit: Retrofit): RemoteApi {
+    fun provideRemoteApi(retrofit: Retrofit): RemoteApi {
         return retrofit.create(RemoteApi::class.java)
     }
 }
 
-
-fun getUnsafeOkHttpClient(): OkHttpClient.Builder {
+fun createInsecureOkHttpClient(): OkHttpClient.Builder {
     return try {
-        val trustAllCerts = arrayOf<TrustManager>(
+        val trustAllCertificates = arrayOf<TrustManager>(
             object : X509TrustManager {
                 @Throws(CertificateException::class)
-                override fun checkClientTrusted(chain: Array<X509Certificate>, authType: String) {
-                }
+                override fun checkClientTrusted(chain: Array<X509Certificate>, authType: String) {}
 
                 @Throws(CertificateException::class)
-                override fun checkServerTrusted(chain: Array<X509Certificate>, authType: String) {
-                }
+                override fun checkServerTrusted(chain: Array<X509Certificate>, authType: String) {}
 
                 override fun getAcceptedIssuers(): Array<X509Certificate> {
                     return arrayOf()
@@ -60,12 +57,12 @@ fun getUnsafeOkHttpClient(): OkHttpClient.Builder {
         )
 
         val sslContext = SSLContext.getInstance("SSL")
-        sslContext.init(null, trustAllCerts, SecureRandom())
+        sslContext.init(null, trustAllCertificates, SecureRandom())
 
         val sslSocketFactory: SSLSocketFactory = sslContext.socketFactory
         val builder = OkHttpClient.Builder()
-        builder.sslSocketFactory(sslSocketFactory, trustAllCerts[0] as X509TrustManager)
-        builder.hostnameVerifier { hostname, session -> true }
+        builder.sslSocketFactory(sslSocketFactory, trustAllCertificates[0] as X509TrustManager)
+        builder.hostnameVerifier { _, _ -> true }
         builder
     } catch (e: Exception) {
         throw RuntimeException(e)

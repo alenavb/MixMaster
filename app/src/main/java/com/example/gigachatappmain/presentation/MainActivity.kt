@@ -14,35 +14,30 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import com.example.gigachatappmain.R
+import com.example.gigachatappmain.databinding.ActivityMainBinding
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
     private lateinit var answerViewModel: AnswerViewModel
-    private lateinit var editTextMain: EditText
-    private lateinit var buttonGenerateMain: AppCompatButton
-    private lateinit var textResult: TextView
+    private lateinit var mBind: ActivityMainBinding
 
     @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        mBind = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(mBind.root)
 
         answerViewModel = ViewModelProvider(this).get(AnswerViewModel::class.java)
 
-        editTextMain = findViewById(R.id.editTextMain)
-        buttonGenerateMain = findViewById(R.id.buttonGenerateMain)
-        textResult = findViewById(R.id.textResult)
-
-
         lifecycleScope.launchWhenStarted {
             answerViewModel.result.collect { result ->
-                textResult.text = result
+                mBind.textResult.text = result
             }
         }
 
-        buttonGenerateMain.setOnClickListener {
-            val inputText = editTextMain.text.toString()
+        mBind.buttonGenerateMain.setOnClickListener {
+            val inputText = mBind.editTextMain.text.toString()
             if (inputText.isNotEmpty()) {
                 val content  = "Придумай коктейль из этих ингридиентов + $inputText"
                 answerViewModel.getResult(content)

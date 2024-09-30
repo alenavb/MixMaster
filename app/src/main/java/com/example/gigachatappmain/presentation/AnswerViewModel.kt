@@ -1,17 +1,14 @@
 package com.example.gigachatappmain.presentation
 
-import android.annotation.SuppressLint
 import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.gigachatappmain.MyApp
 import com.example.gigachatappmain.Utils
-import com.example.gigachatappmain.db.DataBaseRepository
+import com.example.gigachatappmain.db.DBRepository
 import com.example.gigachatappmain.domain.db.DbAnswer
 import com.example.gigachatappmain.domain.db.Messages
 import com.example.gigachatappmain.domain.remote.DataRaw
@@ -31,7 +28,7 @@ import javax.inject.Inject
 @HiltViewModel
 class AnswerViewModel @Inject constructor(
     private val repository: MainRepository,
-    private val dbRepository: DataBaseRepository
+    private val dbRepository: DBRepository
 ) : ViewModel() {
 
     private val _result = MutableStateFlow<String>("")

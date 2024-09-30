@@ -6,7 +6,7 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class DataBaseRepository @Inject constructor (@ADataBase private val db: AnswerDataBase) {
+class DBRepository @Inject constructor (@ADataBase private val db: AnswerDataBase) {
     suspend fun getAnswer(query:String) = db.answerDao().findByQuery(query)
 
     suspend fun insertAnswer(answer: DbAnswer) = db.answerDao().insertAnswer(answer)

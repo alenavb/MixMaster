@@ -17,8 +17,8 @@ interface RemoteApi {
         @Field("scope") scope: String = "GIGACHAT_API_PERS",
         @Header("Content-Type") contentType: String = "application/x-www-form-urlencoded",
         @Header("Accept") accept: String = "application/json",
-        @Header("RqUID") id: String = "введите свой RqUID",
-        @Header("Authorization") auth: String = "Введите свой Authorization"
+        @Header("RqUID") id: String = "b726d2fc-d80f-4fee-be23-d20dc792e3d7",
+        @Header("Authorization") auth: String = "Basic YjcyNmQyZmMtZDgwZi00ZmVlLWJlMjMtZDIwZGM3OTJlM2Q3OmMyYjE2NTI3LTMzNDEtNGRhYS05YzFkLThhODQyM2JhYWY4Ng=="
     ): Token
 
     @POST()

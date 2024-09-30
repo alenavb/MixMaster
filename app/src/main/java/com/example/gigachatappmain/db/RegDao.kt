@@ -7,7 +7,7 @@ import androidx.room.Query
 import com.example.gigachatappmain.domain.registration.RegUser
 
 @Dao
-interface RegistrationDaoInterface {
+interface RegDao {
     @Query("SELECT * FROM RegUser")
     fun getRegUserAnswer(): List<RegUser>
 

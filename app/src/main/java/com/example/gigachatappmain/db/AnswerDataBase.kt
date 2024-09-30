@@ -7,9 +7,9 @@ import com.example.gigachatappmain.domain.registration.RegUser
 
 @Database(entities = [DbAnswer::class], version = 1)
 abstract class AnswerDataBase: RoomDatabase(){
-    abstract fun answerDao(): AnswerDaoInterface
+    abstract fun answerDao(): AnswerDao
 }
 @Database(entities = [RegUser::class], version = 1)
 abstract class RegistrationDataBase: RoomDatabase(){
-    abstract fun registrationDao(): RegistrationDaoInterface
+    abstract fun registrationDao(): RegDao
 }

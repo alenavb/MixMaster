@@ -7,7 +7,7 @@ import androidx.room.Query
 import com.example.gigachatappmain.domain.db.DbAnswer
 
 @Dao
-interface AnswerDaoInterface {
+interface AnswerDao {
     @Query("SELECT * FROM DbAnswer")
     suspend fun getAnswer(): List<DbAnswer>
 
