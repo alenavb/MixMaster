@@ -17,6 +17,9 @@ import com.example.gigachatappmain.domain.db.Messages
 import com.example.gigachatappmain.domain.remote.DataRaw
 import com.example.gigachatappmain.domain.repository.MainRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
 import java.io.IOException
@@ -27,21 +30,18 @@ import javax.inject.Inject
 
 @HiltViewModel
 class AnswerViewModel @Inject constructor(
-    val repository: MainRepository,
-    val dbRepository: DataBaseRepository
+    private val repository: MainRepository,
+    private val dbRepository: DataBaseRepository
 ) : ViewModel() {
 
-    private val _result = MutableLiveData<String>()
-    val result: LiveData<String> = _result
-    val context = MyApp.appContext
-    val sharedpref =
-        context.getSharedPreferences(
-            "user details",
-            AppCompatActivity.MODE_PRIVATE
-        )
+    private val _result = MutableStateFlow<String>("")
+    val result: StateFlow<String> = _result.asStateFlow()
+    private val context = MyApp.appContext
+    private val sharedPref =
+        context.getSharedPreferences("user details", AppCompatActivity.MODE_PRIVATE)
 
     fun getAnswer(content: String) {
-        val token = sharedpref.getString("token", null) ?: ""
+        val token = sharedPref.getString("token", null) ?: ""
         Log.d("ViewModel", "getAnswer $token")
         val msg = Messages("user", content)
         val dr = DataRaw("GigaChat", arrayOf(msg), 1, 0.1, 1, false, 512, 1, 0)
@@ -51,7 +51,7 @@ class AnswerViewModel @Inject constructor(
                 val nAnswer: DbAnswer? = dbRepository.getAnswer(content)
                 if (nAnswer != null) {
                     Log.d("Mode", "Db")
-                    _result.postValue(nAnswer.answer)
+                    _result.value = nAnswer.answer
                 } else {
                     val sdf = SimpleDateFormat("dd/M/yyyy hh:mm:ss")
                     val currentDate = sdf.format(Date())
@@ -62,16 +62,16 @@ class AnswerViewModel @Inject constructor(
                         "Bearer $token"
                     ).choices[0].message.content
 
-                    _result.postValue(answer)
+                    _result.value = answer
 
                     val dbAnswer = DbAnswer(currentDate.hashCode().toInt(), content, answer)
                     dbRepository.insertAnswer(dbAnswer)
                     Log.d("Mode", "Net")
                 }
             } catch (e: IOException) {
-                _result.postValue("getAnswer: " + e.message.toString())
+                _result.value = "getAnswer: " + e.message.toString()
             } catch (e: HttpException) {
-                _result.postValue("getAnswer: " + e.message.toString())
+                _result.value = "getAnswer: " + e.message.toString()
             }
         }
     }
@@ -82,16 +82,17 @@ class AnswerViewModel @Inject constructor(
             viewModelScope.launch {
                 try {
                     val token = repository.getToken().access_token
-                    val editor = sharedpref.edit()
-                    editor.putString("token", token)
-                    editor.putString("timeToStartToken", LocalDateTime.now().toString())
-                    editor.apply()
+                    sharedPref.edit().apply {
+                        putString("token", token)
+                        putString("timeToStartToken", LocalDateTime.now().toString())
+                        apply()
+                    }
                     Log.d("ViewModel", "getToken $token")
                     getAnswer(content)
                 } catch (e: IOException) {
-                    _result.postValue("getToken: " + e.message.toString())
+                    _result.value = "getToken: " + e.message.toString()
                 } catch (e: HttpException) {
-                    _result.postValue("getToken: " + e.message.toString())
+                    _result.value = "getToken: " + e.message.toString()
                 }
             }
         } else {
